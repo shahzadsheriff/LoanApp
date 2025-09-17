@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blue & White Auth — Role Selection Added</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      /* Accent system for variants */
+      .accent-info {
+        --accent: #0284c7;
+        --accent-weak: #e0f2fe;
+      }
+      .accent-success {
+        --accent: #059669;
+        --accent-weak: #dcfce7;
+      }
+      .accent-error {
+        --accent: #e11d48;
+        --accent-weak: #ffe4e6;
+      }
+      .accent-text {
+        color: var(--accent);
+      }
+      .accent-bg {
+        background-color: var(--accent-weak);
+      }
+      .accent-fill {
+        background-color: var(--accent);
+      }
+      .accent-ring {
+        box-shadow: 0 0 0 6px var(--accent-weak);
+      }
+
+      /* Dialog animations */
+      @keyframes dialog-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes dialog-out {
+        from {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(8px) scale(0.98);
+        }
+      }
+
+      /* Toast animations */
+      @keyframes toast-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes toast-out {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 text-slate-900"
+  >
+    <div class="mx-auto grid min-h-screen max-w-6xl grid-cols-1 md:grid-cols-5">
+      <!-- Left / Showcase -->
+      <aside class="relative hidden md:col-span-3 md:flex">
+        <div
+          class="m-8 flex w-full flex-col justify-between rounded-3xl bg-gradient-to-br from-sky-600 to-sky-700 p-10 text-white shadow-2xl"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="grid h-11 w-11 place-items-center rounded-2xl bg-white/10 text-white shadow-lg"
+            >
+              <i data-lucide="shield-check" class="h-6 w-6"></i>
+            </div>
+            <div>
+              <p class="text-xl font-semibold tracking-tight">BlueFin Loans</p>
+              <p class="text-xs text-white/80">Apply • Track • Grow</p>
+            </div>
+          </div>
+
+          <div class="mt-8 space-y-6">
+            <h2 class="text-4xl font-semibold leading-tight">
+              Smart loans for growing businesses
+            </h2>
+            <p class="max-w-md text-white/90">
+              Apply in minutes, track every step, and get funded faster. A
+              clear, simple experience designed for founders and finance teams.
+            </p>
+            <ul class="space-y-3 text-white/90">
+              <li class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15"
+                  ><i data-lucide="shield-check" class="h-4 w-4"></i
+                ></span>
+                Bank‑grade security
+              </li>
+              <li class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15"
+                  ><i data-lucide="arrow-right" class="h-4 w-4"></i
+                ></span>
+                Transparent status tracking
+              </li>
+              <li class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15"
+                  ><i data-lucide="user-plus" class="h-4 w-4"></i
+                ></span>
+                Team access & roles
+              </li>
+            </ul>
+          </div>
+
+          <div class="mt-10 rounded-2xl bg-white/10 p-4 backdrop-blur">
+            <p class="text-sm text-white/90">
+              Trusted by SMEs and lenders across the GCC.
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right / Auth Card -->
+      <main class="flex items-center justify-center p-6 md:col-span-2">
+        <div
+          class="w-full max-w-md rounded-3xl border border-slate-200 bg-white shadow-xl"
+        >
+          <div class="space-y-2 p-6 pb-2">
+            <h1 id="formTitle" class="text-2xl font-semibold">Welcome back</h1>
+            <p id="formDesc" class="text-sm text-slate-500">
+              Sign in to manage your loan applications.
+            </p>
+          </div>
+          <div class="p-6 pt-2">
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-4">
+              <div class="space-y-2">
+                <label for="loginEmail" class="text-sm text-slate-700"
+                  >Email</label
+                >
+                <div
+                  class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-sky-400"
+                >
+                  <i data-lucide="mail" class="h-4 w-4 text-slate-400"></i>
+                  <input
+                    id="loginEmail"
+                    type="email"
+                    placeholder="you@company.com"
+                    class="w-full border-0 outline-none"
+                  />
+                </div>
+                <p id="loginEmailErr" class="hidden text-xs text-red-500">
+                  Please enter a valid email.
+                </p>
+              </div>
+
+              <div class="space-y-2">
+                <label for="loginPassword" class="text-sm text-slate-700"
+                  >Password</label
+                >
+                <div
+                  class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-sky-400"
+                >
+                  <i data-lucide="lock" class="h-4 w-4 text-slate-400"></i>
+                  <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    class="w-full border-0 outline-none"
+                  />
+                  <button
+                    type="button"
+                    id="loginShow"
+                    class="text-slate-400 transition hover:text-slate-600"
+                    aria-label="Show password"
+                  >
+                    <i data-lucide="eye" class="h-4 w-4"></i>
+                  </button>
+                </div>
+                <p id="loginPwdErr" class="hidden text-xs text-red-500">
+                  Password must be at least 8 characters.
+                </p>
+              </div>
+
+              <!-- Role Select -->
+              <div class="space-y-2">
+                <label for="loginRole" class="text-sm text-slate-700"
+                  >Role</label
+                >
+                <div
+                  class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-sky-400"
+                >
+                  <i data-lucide="briefcase" class="h-4 w-4 text-slate-400"></i>
+                  <select
+                    id="loginRole"
+                    class="w-full border-0 bg-transparent outline-none"
+                  >
+                    <option value="">Select role</option>
+                    <option value="applicant">Applicant</option>
+                    <option value="analyst">Analyst</option>
+                    <option value="underwriter">Underwriter</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <p id="loginRoleErr" class="hidden text-xs text-red-500">
+                  Please select your role.
+                </p>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <label
+                  class="inline-flex cursor-pointer items-center gap-2 text-sm text-slate-600"
+                >
+                  <input
+                    id="rememberMe"
+                    type="checkbox"
+                    checked
+                    class="h-4 w-4 rounded border-slate-300 text-sky-600"
+                  />
+                  Remember me
+                </label>
+                <a
+                  href="#"
+                  id="forgotLink"
+                  class="text-sm text-sky-700 hover:underline"
+                  >Forgot password?</a
+                >
+              </div>
+
+              <button
+                class="w-full rounded-2xl bg-sky-600 px-4 py-2 font-medium text-white hover:bg-sky-700"
+              >
+                Sign in
+              </button>
+
+              <!-- Removed social logins -->
+
+              <p class="text-center text-sm text-slate-600">
+                New here?
+                <button
+                  type="button"
+                  id="toSignup"
+                  class="text-sky-700 hover:underline"
+                >
+                  Create an account
+                </button>
+              </p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="hidden space-y-4">
+              <div class="space-y-2">
+                <label for="fullName" class="text-sm text-slate-700"
+                  >Full name</label
+                >
+                <div
+                  class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-sky-400"
+                >
+                  <input
+                    id="fullName"
+                    type="text"
+                    placeholder="First & last name"
+                    class="w-full border-0 outline-none"
+                  />
+                </div>
+                <p id="fullNameErr" class="hidden text-xs text-red-500">
+                  Full name is required.
+                </p>
+              </div>
+
+              <div class="space-y-2">
+                <label for="signupEmail" class="text-sm text-slate-700"
+                  >Email</label
+                >
+                <div
+                  class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-sky-400"
+                >
+                  <i data-lucide="mail" class="h-4 w-4 text-slate-400"></i>
+                  <input
+                    id="signupEmail"
+                    type="email"
+                    placeholder="you@company.com"
+                    class="w-full border-0 outline-none"
+                  />
+                </div>
+                <p id="signupEmailErr" class="hidden text-xs text-red-500">
+                  Please enter a valid email.
+                </p>
+              </div>
+
+              <div class="space-y-2">
+                <label for="signupPwd" class="text-sm text-slate-700"
+                  >Password</label
+                >
+                <div
+                  class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-sky-400"
+                >
+                  <i data-lucide="lock" class="h-4 w-4 text-slate-400"></i>
+                  <input
+                    id="signupPwd"
+                    type="password"
+                    placeholder="At least 8 characters"
+                    class="w-full border-0 outline-none"
+                  />
+                  <button
+                    type="button"
+                    id="signupShow"
+                    class="text-slate-400 transition hover:text-slate-600"
+                    aria-label="Show password"
+                  >
+                    <i data-lucide="eye" class="h-4 w-4"></i>
+                  </button>
+                </div>
+                <p id="signupPwdErr" class="hidden text-xs text-red-500">
+                  Password must be at least 8 characters.
+                </p>
+              </div>
+
+              <div class="space-y-2">
+                <label for="signupPwd2" class="text-sm text-slate-700"
+                  >Confirm password</label
+                >
+                <div
+                  class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-sky-400"
+                >
+                  <i data-lucide="lock" class="h-4 w-4 text-slate-400"></i>
+                  <input
+                    id="signupPwd2"
+                    type="password"
+                    placeholder="Re-enter your password"
+                    class="w-full border-0 outline-none"
+                  />
+                </div>
+                <p id="signupPwd2Err" class="hidden text-xs text-red-500">
+                  Passwords do not match.
+                </p>
+              </div>
+
+              <button
+                class="w-full rounded-2xl bg-sky-600 px-4 py-2 font-medium text-white hover:bg-sky-700"
+              >
+                Create account
+              </button>
+              <p class="text-center text-sm text-slate-600">
+                Already have an account?
+                <button
+                  type="button"
+                  id="toLogin"
+                  class="text-sky-700 hover:underline"
+                >
+                  Sign in
+                </button>
+              </p>
+            </form>
+
+            <p class="mt-6 text-center text-xs text-slate-400">
+              By continuing, you agree to our
+              <a href="#" class="text-sky-700 hover:underline">Terms</a> and
+              <a href="#" class="text-sky-700 hover:underline">Privacy Policy</a
+              >.
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Elegant Modal Dialog -->
+    <div id="modal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+      <div
+        class="relative z-10 mx-auto grid h-full max-w-md place-items-center p-6"
+      >
+        <div
+          id="modalCard"
+          class="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl accent-info"
+          style="animation: dialog-in 0.16s ease-out both"
+        >
+          <div class="flex items-start gap-4">
+            <div
+              class="accent-bg accent-ring grid h-10 w-10 place-items-center rounded-2xl"
+            >
+              <i
+                id="modalIcon"
+                data-lucide="info"
+                class="h-5 w-5 accent-text"
+              ></i>
+            </div>
+            <div class="flex-1">
+              <h3 id="modalTitle" class="text-lg font-semibold text-slate-900">
+                Notice
+              </h3>
+              <p id="modalMessage" class="mt-1 text-slate-600">
+                Message goes here.
+              </p>
+            </div>
+          </div>
+          <div class="mt-5 flex justify-end gap-2">
+            <button
+              id="modalCancel"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-slate-700 hover:bg-slate-50 hidden"
+            >
+              Cancel
+            </button>
+            <button
+              id="modalOk"
+              class="rounded-2xl px-4 py-2 text-white accent-fill hover:opacity-90"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast container -->
+    <div
+      id="toastContainer"
+      class="pointer-events-none fixed bottom-6 right-6 z-[60] flex flex-col gap-3"
+    ></div>
+
+    <script>
+      function isEmail(v) {
+        return /[^\s@]+@[^\s@]+\.[^\s@]+/.test(v);
+      }
+      function isStrongPwd(v) {
+        return v && v.length >= 8;
+      }
+
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const toSignup = document.getElementById('toSignup');
+      const toLogin = document.getElementById('toLogin');
+      const formTitle = document.getElementById('formTitle');
+      const formDesc = document.getElementById('formDesc');
+
+      const forgotLink = document.getElementById('forgotLink');
+
+      // Modal elements
+      const modal = document.getElementById('modal');
+      const modalCard = document.getElementById('modalCard');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalIcon = document.getElementById('modalIcon');
+      const modalOk = document.getElementById('modalOk');
+      const modalCancel = document.getElementById('modalCancel');
+
+      const VARIANTS = {
+        info: { cls: 'accent-info', icon: 'info', ok: 'OK' },
+        success: { cls: 'accent-success', icon: 'check-circle', ok: 'Great' },
+        error: { cls: 'accent-error', icon: 'alert-triangle', ok: 'Got it' },
+      };
+
+      function openModal({
+        variant = 'info',
+        title = 'Notice',
+        message = '',
+        confirmText,
+        cancelText,
+        onConfirm,
+        onCancel,
+      }) {
+        // Variant styles
+        Object.values(VARIANTS).forEach((v) =>
+          modalCard.classList.remove(v.cls)
+        );
+        modalCard.classList.add(VARIANTS[variant].cls);
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modalIcon.setAttribute('data-lucide', VARIANTS[variant].icon);
+        lucide.createIcons();
+
+        // Buttons
+        modalOk.textContent = confirmText || VARIANTS[variant].ok;
+        if (cancelText) {
+          modalCancel.textContent = cancelText;
+          modalCancel.classList.remove('hidden');
+        } else {
+          modalCancel.classList.add('hidden');
+        }
+
+        // Handlers
+        const cleanup = () => {
+          modal.classList.add('hidden');
+          modalCard.style.animation = 'dialog-out .12s ease-in both';
+          setTimeout(() => {
+            modalCard.style.animation = 'dialog-in .16s ease-out both';
+          }, 150);
+          document.removeEventListener('keydown', onKey);
+          overlay.removeEventListener('click', onOverlay);
+          modalOk.onclick = null;
+          modalCancel.onclick = null;
+        };
+        const onKey = (e) => {
+          if (e.key === 'Escape') {
+            cleanup();
+            onCancel && onCancel();
+          }
+        };
+        const overlay = modal.querySelector('.absolute');
+        const onOverlay = (e) => {
+          if (e.target === overlay) {
+            cleanup();
+            onCancel && onCancel();
+          }
+        };
+
+        modalOk.onclick = () => {
+          cleanup();
+          onConfirm && onConfirm();
+        };
+        modalCancel.onclick = () => {
+          cleanup();
+          onCancel && onCancel();
+        };
+
+        document.addEventListener('keydown', onKey);
+        overlay.addEventListener('click', onOverlay);
+
+        modal.classList.remove('hidden');
+        setTimeout(() => modalOk.focus(), 50);
+      }
+
+      // Toasts
+      const toastContainer = document.getElementById('toastContainer');
+      function showToast(message, variant = 'success', timeout = 2600) {
+        const wrap = document.createElement('div');
+        wrap.className =
+          'pointer-events-auto rounded-2xl border border-slate-200 bg-white shadow-xl min-w-[280px] max-w-[360px]';
+        wrap.style.animation = 'toast-in .18s ease-out both';
+        const color =
+          variant === 'success'
+            ? '#059669'
+            : variant === 'error'
+            ? '#e11d48'
+            : '#0284c7';
+        wrap.innerHTML = `
+        <div class="flex items-start gap-3 p-4" style="border-left:4px solid ${color}">
+          <div class="grid h-8 w-8 place-items-center rounded-xl" style="background-color: ${color}1a">
+            <i data-lucide="${
+              variant === 'success'
+                ? 'check-circle'
+                : variant === 'error'
+                ? 'alert-triangle'
+                : 'info'
+            }" class="h-4 w-4" style="color:${color}"></i>
+          </div>
+          <div class="flex-1 text-sm text-slate-700">${message}</div>
+          <button aria-label="Close" class="text-slate-400 hover:text-slate-600">
+            <i data-lucide="x" class="h-4 w-4"></i>
+          </button>
+        </div>`;
+        lucide.createIcons();
+        const closer = wrap.querySelector('button');
+        closer.addEventListener('click', () => remove());
+        toastContainer.appendChild(wrap);
+        let timer = setTimeout(remove, timeout);
+        function remove() {
+          clearTimeout(timer);
+          wrap.style.animation = 'toast-out .14s ease-in both';
+          setTimeout(() => wrap.remove(), 150);
+        }
+        return remove;
+      }
+
+      // Toggle forms
+      toSignup.addEventListener('click', () => {
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+        formTitle.textContent = 'Create your account';
+        formDesc.textContent = 'Sign up to start your loan journey.';
+      });
+      toLogin.addEventListener('click', () => {
+        signupForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        formTitle.textContent = 'Welcome back';
+        formDesc.textContent = 'Sign in to manage your loan applications.';
+      });
+
+      // Show/hide passwords
+      function togglePwd(btnId, inputId) {
+        const btn = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        btn.addEventListener('click', () => {
+          input.type = input.type === 'password' ? 'text' : 'password';
+          btn.innerHTML =
+            input.type === 'password'
+              ? '<i data-lucide="eye" class="h-4 w-4"></i>'
+              : '<i data-lucide="eye-off" class="h-4 w-4"></i>';
+          lucide.createIcons();
+        });
+      }
+      togglePwd('loginShow', 'loginPassword');
+      togglePwd('signupShow', 'signupPwd');
+
+      // Validate + improved prompts
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPassword').value;
+        const role = document.getElementById('loginRole').value;
+        const emailErr = document.getElementById('loginEmailErr');
+        const pwdErr = document.getElementById('loginPwdErr');
+        const roleErr = document.getElementById('loginRoleErr');
+        let ok = true;
+        if (!isEmail(email)) {
+          emailErr.classList.remove('hidden');
+          ok = false;
+        } else {
+          emailErr.classList.add('hidden');
+        }
+        if (!isStrongPwd(pwd)) {
+          pwdErr.classList.remove('hidden');
+          ok = false;
+        } else {
+          pwdErr.classList.add('hidden');
+        }
+        if (!role) {
+          roleErr.classList.remove('hidden');
+          ok = false;
+        } else {
+          roleErr.classList.add('hidden');
+        }
+        if (!ok) {
+          showToast('Please fix the highlighted fields.', 'error');
+          return;
+        }
+        showToast('Signed in (demo). Role: ' + role + '.', 'success');
+      });
+
+      signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const full = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const p1 = document.getElementById('signupPwd').value;
+        const p2 = document.getElementById('signupPwd2').value;
+        const fullErr = document.getElementById('fullNameErr');
+        const emailErr = document.getElementById('signupEmailErr');
+        const p1Err = document.getElementById('signupPwdErr');
+        const p2Err = document.getElementById('signupPwd2Err');
+        let ok = true;
+        if (!full) {
+          fullErr.classList.remove('hidden');
+          ok = false;
+        } else {
+          fullErr.classList.add('hidden');
+        }
+        if (!isEmail(email)) {
+          emailErr.classList.remove('hidden');
+          ok = false;
+        } else {
+          emailErr.classList.add('hidden');
+        }
+        if (!isStrongPwd(p1)) {
+          p1Err.classList.remove('hidden');
+          ok = false;
+        } else {
+          p1Err.classList.add('hidden');
+        }
+        if (p1 !== p2) {
+          p2Err.classList.remove('hidden');
+          ok = false;
+        } else {
+          p2Err.classList.add('hidden');
+        }
+        if (!ok) {
+          showToast('Please review your signup details.', 'error');
+          return;
+        }
+        showToast('Account created (demo). You can now sign in.', 'success');
+        toLogin.click();
+        document.getElementById('loginEmail').value = email;
+      });
+
+      // Forgot password example (nice info modal)
+      forgotLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal({
+          variant: 'info',
+          title: 'Password reset',
+          message:
+            "Enter your email on the sign in form and press Continue. We'll send you a reset link (demo).",
+          confirmText: 'OK',
+        });
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+      });
+    </script>
+  </body>
+</html>
